@@ -1,26 +1,29 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 
 class Zealgrid{
   static Zealgrid? _this;
-  final String url;
-  Zealgrid._({required this.url});
+  final String path;
+  Zealgrid._({this.path=''});
   static final DatabaseReference _database = FirebaseDatabase.instance.ref();
 
-  static Zealgrid getInstance({
-    required String url
-  }){
+  static Zealgrid getInstance({String path=''}){
     if(_this==null){
-      _this = Zealgrid._(url: url);
+      _this = Zealgrid._(path: path);
     }
     return _this!;
   }
-  static Future<void> initializeFirebase() async {
+  Zealgrid child(String child) {
+    return Zealgrid._(path: '$path/$child');
+  }
+  Future<void> initializeFirebase() async {
     await Firebase.initializeApp();
   }
-  static Future<String?> getString(String key)async{
+  Future<String?> getString(String key)async{
     try {
-      DataSnapshot snapshot = await _database.child(key).get();
+      debugPrint('PATH : ${path}/${key}');
+      DataSnapshot snapshot = await _database.child(path).child(key).get();
       if (snapshot.value != null) {
         return snapshot.value.toString();
       } else {
@@ -31,9 +34,11 @@ class Zealgrid{
       return null; // Return null in case of any error
     }
   }
-  static Future<int?> getInt(String key)async{
+  Future<int?> getInt(String key)async{
+    debugPrint('PATH : ${path}/${key}');
+
     try {
-      DataSnapshot snapshot = await _database.child(key).get();
+      DataSnapshot snapshot = await _database.child(path).child(key).get();
       if (snapshot.value != null) {
         return int.tryParse('${snapshot.value}');
       } else {
@@ -44,9 +49,11 @@ class Zealgrid{
       return null; // Return null in case of any error
     }
   }
-  static Future<bool?> getBool(String key)async{
+  Future<bool?> getBool(String key)async{
+    debugPrint('PATH : ${path}/${key}');
+
     try {
-      DataSnapshot snapshot = await _database.child(key).get();
+      DataSnapshot snapshot = await _database.child(path).child(key).get();
       if (snapshot.value != null) {
         return bool.tryParse('${snapshot.value}');
       } else {
@@ -57,9 +64,11 @@ class Zealgrid{
       return null; // Return null in case of any error
     }
   }
-  static Future<dynamic?> getObject(String key)async{
+  Future<dynamic?> getObject(String key)async{
     try {
-      DataSnapshot snapshot = await _database.child(key).get();
+      debugPrint('PATH : ${path}/${key}');
+
+      DataSnapshot snapshot = await _database.child(path).child(key).get();
       if (snapshot.value != null) {
         return snapshot.value;
       } else {
@@ -70,9 +79,11 @@ class Zealgrid{
       return null; // Return null in case of any error
     }
   }
-  static Future<List<dynamic>> getList(String key) async {
+  Future<List<dynamic>>getList(String key) async {
     try {
-      DataSnapshot snapshot = await _database.child(key).get();
+      debugPrint('PATH : ${path}/${key}');
+
+      DataSnapshot snapshot = await _database.child(path).child(key).get();
       if (snapshot.value != null && snapshot.value is Iterable) {
         return List.from(snapshot.value as Iterable);
       } else {
